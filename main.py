@@ -60,10 +60,10 @@ class stalker(tweepy.StreamListener):
         if status_error == 420:
             return False
     
-CONSUMER_KEY = environ['CONSUMER_KEY']
-CONSUMER_SECRET = environ['CONSUMER_SECRET']
-ACCESS_KEY = environ['ACESS_KEY']
-ACCESS_SECRET = environ['ACESS_SECRET']
+CONSUMER_KEY = environ[CONSUMER_KEY]
+CONSUMER_SECRET = environ[CONSUMER_SECRET]
+ACCESS_KEY = environ[ACESS_KEY]
+ACCESS_SECRET = environ[ACESS_SECRET]
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
