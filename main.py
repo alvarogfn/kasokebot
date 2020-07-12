@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 
 def save(database, user):
-    
+    print('Salvando conteúdo....')
     ext = f'database\\database{datetime.now().year}.json' 
     try:
         open(ext, 'r').close()
@@ -37,6 +37,7 @@ def save(database, user):
             outfile.close()
 
 def reply_status(screen_name, tweetid):
+    print('Mandando um DateBayo!')
     try:
         api.update_with_media(status=f'@{screen_name} Baaaaaaayo!!!! :3', in_reply_to_status_id=tweetid, filename='dattebayo.gif')
         api.create_favorite(tweetid)
@@ -66,7 +67,8 @@ class stalker(tweepy.StreamListener):
     def on_error(self, status_error):
             if status_error == 420:
                 return False
-    
+            
+print('Iniciando o NaruBot!')
 CONSUMER_KEY = environ['CONSUMER_KEY']
 CONSUMER_SECRET = environ['CONSUMER_SECRET']
 ACCESS_KEY = environ['ACESS_KEY']
@@ -76,7 +78,7 @@ auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth, wait_on_rate_limit=True)
 
-api.update_status('Online!')
 stalker = stalker()
 stalking = tweepy.Stream(auth=api.auth, listener=stalker)
 stalking.filter(track=['Dattebayo!', 'Dattebane!', 'Dattebasa!'])
+print('Desligando o NaruBot!')
