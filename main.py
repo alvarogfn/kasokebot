@@ -1,5 +1,6 @@
 import tweepy
 from os import environ
+from boto.s3.connection import S3Connection
 from time import sleep
 from datetime import datetime
 import json
@@ -60,17 +61,17 @@ class stalker(tweepy.StreamListener):
         if status_error == 420:
             return False
     
-
-CONSUMER_KEY = environ.get('CONSUMER_KEY')
-CONSUMER_SECRET = environ.get('CONSUMER_SECRET')
-ACCESS_KEY = environ.get('ACESS_KEY')
-ACCESS_SECRET = environ.get('ACESS_SECRET')
+CONSUMER_KEY = S3Connection(environ['CONSUMER_KEY'])
+CONSUMER_SECRET = S3Connection(environ['CONSUMER_SECRET'])
+ACCESS_KEY = S3Connection(environ['ACESS_KEY'])
+ACCESS_SECRET = S3Connection(environ['ACESS_SECRET'])
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 
-
+api.update_status('Datebayo: On! :)')
 stalker = stalker()
 stalking = tweepy.Stream(auth=api.auth, listener=stalker)
 stalking.filter(track=['Dattebayo!'])
+api.update_status('Datebayo: Off! :(')
