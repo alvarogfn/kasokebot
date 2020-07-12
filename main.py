@@ -24,21 +24,28 @@ def save(database, user):
             
             if user in dataupdate.keys():
                 database['TOTAL_USES'] += dataupdate[user]['TOTAL_USES']
+                dataupdate[user]['TOTAL_USES'] = database['TOTAL_USES']
                 
-            data = {}
-            data[user] = database
+            else:
+                data = {}
+                data[user] = database
+                dataupdate.update(data)
             
             dataupdate['total'] += 1
-            dataupdate.update(data)
             outfile.seek(0)
             json.dump(dataupdate, outfile, indent=4)
             outfile.close()
 
 def reply_status(screen_name, tweetid):
-    api.retweet(tweetid)
-    api.create_favorite(tweetid)
-    api.update_with_media(status=f'@{screen_name} Bayo!', in_reply_to_status_id=tweetid, filename='dattebayo.gif')
-        
+    try:
+        api.update_with_media(status=f'@{screen_name} Baaaaaaayo!!!! :3', in_reply_to_status_id=tweetid, filename='dattebayo.gif')
+        api.create_favorite(tweetid)
+       #api.retweet(tweetid)
+    except tweepy.RateLimitError:
+        return False  
+    except tweepy.TweepError:
+        pass
+     
 class stalker(tweepy.StreamListener):
     def on_status(self, status):
         user = status.user.screen_name
@@ -57,20 +64,19 @@ class stalker(tweepy.StreamListener):
         sleep(1.5)
     
     def on_error(self, status_error):
-        if status_error == 420:
-            return False
+            if status_error == 420:
+                return False
     
-CONSUMER_KEY = environ[CONSUMER_KEY]
-CONSUMER_SECRET = environ[CONSUMER_SECRET]
-ACCESS_KEY = environ[ACESS_KEY]
-ACCESS_SECRET = environ[ACESS_SECRET]
+CONSUMER_KEY = environ['CONSUMER_KEY']
+CONSUMER_SECRET = environ['CONSUMER_SECRET']
+ACCESS_KEY = environ['ACESS_KEY']
+ACCESS_SECRET = environ['ACESS_SECRET']
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
-api = tweepy.API(auth)
+api = tweepy.API(auth, wait_on_rate_limit=True)
 
-api.update_status('Datebayo: On! :)')
+api.update_status('Online!')
 stalker = stalker()
 stalking = tweepy.Stream(auth=api.auth, listener=stalker)
-stalking.filter(track=['Dattebayo!'])
-api.update_status('Datebayo: Off! :(')
+stalking.filter(track=['Dattebayo!', 'Dattebane!', 'Dattebasa!'])
