@@ -49,7 +49,7 @@ class narubot(tweepy.StreamListener):
             print(f'    Não foi possível retweetar.\nERROR = [{error}]')
         
         else:         
-            print(f'    Re-tweet!.')
+            print(f'    Re-tweet!')
     
     def favorite(self, tweet_id):
         
@@ -63,7 +63,7 @@ class narubot(tweepy.StreamListener):
             print(f'    Não foi possível favoritar.\nERROR = [{error}]')
         
         else:         
-            print(f'    Tweet favoritado!.')
+            print(f'    Tweet favoritado!')
     
     def replying(self, tweet_id, user_name):
         
@@ -80,7 +80,7 @@ class narubot(tweepy.StreamListener):
             print(f'    Não foi possível responder.\nERROR = [{error}]')
         
         else:         
-            print(f'    Tweet respondido!.')
+            print(f'    Tweet respondido!')
     
     def update_status(self, text):
         try:
@@ -93,7 +93,7 @@ class narubot(tweepy.StreamListener):
             print(f'    Não foi possível tweetar.\nERROR = [{error}]')
         
         else:         
-            print(f'    Tweet feito!.')
+            print(f'    Tweet feito!')
 
 
 print('Start NaruBot!')

@@ -9,16 +9,26 @@ CONSUMER_SECRET = environ['CONSUMER_SECRET']
 ACESS_KEY = environ['ACESS_KEY']
 ACESS_SECRET = environ['ACESS_SECRET']
 
-
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACESS_KEY, ACESS_SECRET)
 api = tweepy.API(auth, wait_on_rate_limit=True)
 
-time = 60 * 60 * 1
 sleep(60)
+time = 60 * 60 * 1
+contador = 1
 
 while True:
     frases = get_phrases()
-    api.update_status(choice(frases))
-    print('Tweet filosofico feito!')
+    try:
+        api.update_status(choice(frases))
+        
+    except tweepy.RateLimitError:
+        print('Limite de tweets diarios atingido.')
+        
+    except tweepy.TweepError: 
+        print('Falha ao enviar tweet.')
+    else:
+        print(f'{contador}º Tweet feito!')
+        contador += 1
+    
     sleep(time)
