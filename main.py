@@ -1,84 +1,141 @@
 import tweepy
 from os import environ
 from time import sleep
-from datetime import datetime
-import json
+import functions
+from random import randint, choice
 
-def save(database, user):
-    print('Salvando conteúdo....')
-    ext = f'database\\database{datetime.now().year}.json' 
-    try:
-        open(ext, 'r').close()
-    except FileNotFoundError:
-        open(ext, 'x').close()
-        data = {}
-        data['total'] = 0
-            
-        with open(ext, 'w') as outfile:
-            json.dump(data, outfile, indent=4)
-        outfile.close()
-        sleep(0.1)
-    finally:
-        with open(ext, 'r+') as outfile:
-            dataupdate = json.load(outfile)     
-            
-            if user in dataupdate.keys():
-                database['TOTAL_USES'] += dataupdate[user]['TOTAL_USES']
-                dataupdate[user]['TOTAL_USES'] = database['TOTAL_USES']
-                
-            else:
-                data = {}
-                data[user] = database
-                dataupdate.update(data)
-            
-            dataupdate['total'] += 1
-            outfile.seek(0)
-            json.dump(dataupdate, outfile, indent=4)
-            outfile.close()
-
-def reply_status(screen_name, tweetid):
-    print('Mandando um DateBayo!')
-    try:
-        api.update_with_media(status=f'@{screen_name} Baaaaaaayo!!!! :3', in_reply_to_status_id=tweetid, filename='dattebayo.gif')
-        api.create_favorite(tweetid)
-       #api.retweet(tweetid)
-    except tweepy.RateLimitError:
-        return False  
-    except tweepy.TweepError:
-        pass
-     
-class stalker(tweepy.StreamListener):
-    def on_status(self, status):
-        user = status.user.screen_name
-        userid = status.user.id
-        tweetid = status.id
-        day = f'{datetime.now().day}.{datetime.now().month}.{datetime.now().year}'
-        time = f'{datetime.now().hour}:{datetime.now().minute}:{datetime.now().second}'
+class narubot(tweepy.StreamListener):
+    def __init__(self, CONSUMER_KEY, CONSUMER_SECRET, ACESS_KEY, ACESS_SECRET):
+        auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        auth.set_access_token(ACESS_KEY, ACESS_SECRET)
+        self.api = tweepy.API(auth, wait_on_rate_limit=True)
+        self.status = False
         
-        database = {'USER_ID': userid, 
-                    'TOTAL_USES': 1, 
-                    'LAST_OPERATION_TIME': [day, time]}
-        sleep(0.5)
-        save(database, user)
-        sleep(1.5)
-        reply_status(user, tweetid)
-        sleep(1.5)
+    def streaming(self, track):
+        stalking = tweepy.Stream(auth=self.api.auth, listener=self)
+        stalking.filter(track=track) 
     
+    def on_status(self, status):
+        rt_test = functions.no_text(status.text)
+        
+        if rt_test('RT'):   
+            text_tweet = status.text
+            id_tweet = status.id
+            user = status.user.id
+            screen_name = status.user.screen_name
+            
+            self.informations = {"tweet": text_tweet, "tweet_id": id_tweet, "user_id": user, "user_name": screen_name}
+            
+            return False
+
     def on_error(self, status_error):
             if status_error == 420:
+                self.status = True
                 return False
             
-print('Iniciando o NaruBot!')
+
+    def following(self, user_name):
+        pass
+    
+    def retweet(self, tweet_id):
+        
+        try:
+            self.api.retweet(tweet_id)
+            
+        except tweepy.RateLimitError:
+            print(f'\033[31m    Limite de retweets exedido.\033[37m')
+            
+        except Exception as error:
+            print(f'\033[31m    Não foi possível retweetar.\nERROR = [{error}]\033[37m')
+        
+        else:         
+            print(f'\033[32m    Re-tweet!.\033[37m')
+    
+    def favorite(self, tweet_id):
+        
+        try: 
+            self.api.create_favorite(tweet_id)
+        
+        except tweepy.RateLimitError:
+            print(f'\033[31m    Limite de favoritos exedido.\033[37m')
+            
+        except Exception as error:
+            print(f'\033[31m    Não foi possível favoritar.\nERROR = [{error}]\033[37m')
+        
+        else:         
+            print(f'\033[32m    Tweet favoritado!.\033[37m')
+    
+    def replying(self, tweet_id, user_name):
+        
+        emojis = choice(['^^', '^-^', ':3', '*-*', '>-<', '>_<', '<_<', '>_>', 'o-o', 'u_u'])
+        
+        img = f'images\\dattebayo{randint(0, 3)}.gif'
+        
+        try:
+            self.api.update_with_media(status=f'@{user_name} Baayo!!! {emojis}', in_reply_to_status_id=tweet_id, filename=img)
+        except tweepy.RateLimitError:
+            print(f'\033[31m    Limite de favoritos exedido.\033[37m')
+            
+        except Exception as error:
+            print(f'\033[31m    Não foi possível responder.\nERROR = [{error}]\033[37m')
+        
+        else:         
+            print(f'\033[32m    Tweet respondido!.\033[37m')
+    
+    def update_status(self, text):
+        try:
+            self.api.update_status(text)
+            
+        except tweepy.RateLimitError:
+            print(f'\033[31m    Limite de status exedido.\033[37m')
+            
+        except Exception as error:
+            print(f'\033[31m    Não foi possível tweetar.\nERROR = [{error}]\033[37m')
+        
+        else:         
+            print(f'\033[32m    Tweet feito!.\033[37m')
+
+
+print('Start NaruBot!')
+
 CONSUMER_KEY = environ['CONSUMER_KEY']
 CONSUMER_SECRET = environ['CONSUMER_SECRET']
-ACCESS_KEY = environ['ACESS_KEY']
-ACCESS_SECRET = environ['ACESS_SECRET']
+ACESS_KEY = environ['ACESS_KEY']
+ACESS_SECRET = environ['ACESS_SECRET']
 
-auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
-api = tweepy.API(auth, wait_on_rate_limit=True)
 
-stalker = stalker()
-stalking = tweepy.Stream(auth=api.auth, listener=stalker)
-stalking.filter(track=['Dattebayo!', 'Dattebane!', 'Dattebasa!'])
-print('Desligando o NaruBot!')
+narubot = narubot(CONSUMER_KEY, CONSUMER_SECRET, ACESS_KEY, ACESS_SECRET)
+
+loop = 1
+freshing_update_status = 0
+tracker = ['Dattebayo', 'Dattebayo!']
+
+while True:
+    while True:
+        narubot.streaming(tracker)
+        if narubot.status:
+            break
+
+        print(f'\033[33m{loop}º tweet tracked!\033[37m')
+        
+        narubot.replying(narubot.informations['tweet_id'], narubot.informations['user_name'])
+        sleep(0.5)
+        
+        narubot.retweet(narubot.informations['tweet_id'])
+        sleep(0.5)
+        
+        narubot.favorite(narubot.informations['tweet_id'])
+        sleep(0.5)
+        
+        
+        if freshing_update_status == 0:
+            freshing_update_status = int((60 * 60 * 3) / 2.5)
+            frases = functions.get_phrases()
+            narubot.update_status(choice(frases))
+            
+        freshing_update_status -= 1    
+        loop += 1
+        
+        sleep(1)
+    print('NaruBot desligado por 12hrs!')
+    sleep(43200)
