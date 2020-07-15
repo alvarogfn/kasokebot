@@ -69,7 +69,7 @@ class narubot(tweepy.StreamListener):
         
         emojis = choice(['^^', '^-^', ':3', '*-*', '>-<', '>_<', '<_<', '>_>', 'o-o', 'u_u'])
         
-        img = f'images\\dattebayo{randint(0, 3)}.gif'
+        img = f'images/dattebayo{randint(0, 3)}.gif'
         
         try:
             self.api.update_with_media(status=f'@{user_name} Baayo!!! {emojis}', in_reply_to_status_id=tweet_id, filename=img)
