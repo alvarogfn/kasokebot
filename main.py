@@ -95,7 +95,7 @@ while True:
         if datetime.now().hour == 0:                        # Resetting the operations limit
             ret_limit = 100
             fav_limit = 100
-        
+        loop += 1
         sleep(1)
     print('>>>>>>>>>>>> Paused for 15 minutes! <<<<<<<<<<<<<<')             # Pause
     sleep(900)
