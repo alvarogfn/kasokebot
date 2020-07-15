@@ -115,7 +115,7 @@ while True:
         if narubot.status:
             break
 
-        print(f'\033[33m{loop}º tweet tracked!')
+        print(f'{loop}º tweet tracked!')
         sleep(1)
         
         narubot.replying(narubot.informations['tweet_id'], narubot.informations['user_name'])
