@@ -43,13 +43,13 @@ class narubot(tweepy.StreamListener):
             self.api.retweet(tweet_id)
             
         except tweepy.RateLimitError:
-            print(f'\033[31m    Limite de retweets exedido.\033[37m')
+            print(f'    Limite de retweets exedido.')
             
         except Exception as error:
-            print(f'\033[31m    Não foi possível retweetar.\nERROR = [{error}]\033[37m')
+            print(f'    Não foi possível retweetar.\nERROR = [{error}]')
         
         else:         
-            print(f'\033[32m    Re-tweet!.\033[37m')
+            print(f'    Re-tweet!.')
     
     def favorite(self, tweet_id):
         
@@ -57,13 +57,13 @@ class narubot(tweepy.StreamListener):
             self.api.create_favorite(tweet_id)
         
         except tweepy.RateLimitError:
-            print(f'\033[31m    Limite de favoritos exedido.\033[37m')
+            print(f'    Limite de favoritos exedido.')
             
         except Exception as error:
-            print(f'\033[31m    Não foi possível favoritar.\nERROR = [{error}]\033[37m')
+            print(f'    Não foi possível favoritar.\nERROR = [{error}]')
         
         else:         
-            print(f'\033[32m    Tweet favoritado!.\033[37m')
+            print(f'    Tweet favoritado!.')
     
     def replying(self, tweet_id, user_name):
         
@@ -74,26 +74,26 @@ class narubot(tweepy.StreamListener):
         try:
             self.api.update_with_media(status=f'@{user_name} Baayo!!! {emojis}', in_reply_to_status_id=tweet_id, filename=img)
         except tweepy.RateLimitError:
-            print(f'\033[31m    Limite de favoritos exedido.\033[37m')
+            print(f'    Limite de favoritos exedido.')
             
         except Exception as error:
-            print(f'\033[31m    Não foi possível responder.\nERROR = [{error}]\033[37m')
+            print(f'    Não foi possível responder.\nERROR = [{error}]')
         
         else:         
-            print(f'\033[32m    Tweet respondido!.\033[37m')
+            print(f'    Tweet respondido!.')
     
     def update_status(self, text):
         try:
             self.api.update_status(text)
             
         except tweepy.RateLimitError:
-            print(f'\033[31m    Limite de status exedido.\033[37m')
+            print(f'    Limite de status exedido.')
             
         except Exception as error:
-            print(f'\033[31m    Não foi possível tweetar.\nERROR = [{error}]\033[37m')
+            print(f'    Não foi possível tweetar.\nERROR = [{error}]')
         
         else:         
-            print(f'\033[32m    Tweet feito!.\033[37m')
+            print(f'    Tweet feito!.')
 
 
 print('Start NaruBot!')
@@ -115,7 +115,7 @@ while True:
         if narubot.status:
             break
 
-        print(f'\033[33m{loop}º tweet tracked!\033[37m')
+        print(f'\033[33m{loop}º tweet tracked!')
         sleep(1)
         
         narubot.replying(narubot.informations['tweet_id'], narubot.informations['user_name'])
@@ -126,16 +126,9 @@ while True:
         
         narubot.favorite(narubot.informations['tweet_id'])
         sleep(1)
-        
-        
-        if freshing_update_status == 0:
-            freshing_update_status = int((60 * 60 * 3) / 5)
-            frases = functions.get_phrases()
-            narubot.update_status(choice(frases))
             
-        freshing_update_status -= 1    
         loop += 1
         
         sleep(1)
-    print('NaruBot desligado por 15min!')
-    sleep(900)
+    print('NaruBot desligado por 5 minutos!')
+    sleep(300)
