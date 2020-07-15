@@ -14,7 +14,7 @@ auth.set_access_token(ACESS_KEY, ACESS_SECRET)
 api = tweepy.API(auth, wait_on_rate_limit=True)
 
 sleep(60)
-time = 60 * 60 * 1
+time = 60 * 60 * 2
 contador = 1
 
 while True:

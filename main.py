@@ -3,6 +3,7 @@ from os import environ
 from time import sleep
 import functions
 from random import randint, choice
+from datetime import datetime
 
 class narubot(tweepy.StreamListener):
     def __init__(self, CONSUMER_KEY, CONSUMER_SECRET, ACESS_KEY, ACESS_SECRET):
@@ -106,7 +107,9 @@ ACESS_SECRET = environ['ACESS_SECRET']
 narubot = narubot(CONSUMER_KEY, CONSUMER_SECRET, ACESS_KEY, ACESS_SECRET)
 
 loop = 1
-freshing_update_status = 60
+fav_limit = 0
+ret_limit = 0
+
 tracker = ['Dattebayo', 'Dattebayo!']
 
 while True:
@@ -118,17 +121,23 @@ while True:
         print(f'{loop}º tweet tracked!')
         sleep(1)
         
-        narubot.replying(narubot.informations['tweet_id'], narubot.informations['user_name'])
-        sleep(1)
+        #narubot.replying(narubot.informations['tweet_id'], narubot.informations['user_name'])
+        #sleep(1)
         
-        narubot.retweet(narubot.informations['tweet_id'])
-        sleep(1)
+        if ret_limit > 0:
+            narubot.retweet(narubot.informations['tweet_id'])
+            sleep(1)
+            ret_limit -= 1
+
+        if fav_limit > 0:
+            narubot.favorite(narubot.informations['tweet_id'])
+            sleep(1)
+            fav_limit -= 1
         
-        narubot.favorite(narubot.informations['tweet_id'])
-        sleep(1)
-            
-        loop += 1
+        if datetime.now().hour == 0:
+            ret_limit = 100
+            fav_limit = 100
         
         sleep(1)
-    print('NaruBot desligado por 5 minutos!')
-    sleep(300)
+    print('NaruBot desligado por 15 minutos!')
+    sleep(900)
