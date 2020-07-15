@@ -112,5 +112,5 @@ while True:
             fav_limit = 100
         loop += 1
         sleep(1)
-    print('NaruBot desligado por 15 minutos!')
-    sleep(900)
+    print('NaruBot desligado por 5 minutos!')
+    sleep(300)
