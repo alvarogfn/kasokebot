@@ -28,11 +28,11 @@ class narubot(tweepy.StreamListener):
             
             return False
 
-    def on_error(self, status_error):
-            if status_error == 420:
-                self.status = True
-                return False
-            
+    def on_error(self, status_code):
+        if status_code == 420:
+            self.status = True
+            return False
+
 
     def following(self, user_name):
         pass
@@ -103,11 +103,10 @@ CONSUMER_SECRET = environ['CONSUMER_SECRET']
 ACESS_KEY = environ['ACESS_KEY']
 ACESS_SECRET = environ['ACESS_SECRET']
 
-
 narubot = narubot(CONSUMER_KEY, CONSUMER_SECRET, ACESS_KEY, ACESS_SECRET)
 
 loop = 1
-freshing_update_status = 0
+freshing_update_status = 60
 tracker = ['Dattebayo', 'Dattebayo!']
 
 while True:
@@ -117,19 +116,20 @@ while True:
             break
 
         print(f'\033[33m{loop}º tweet tracked!\033[37m')
+        sleep(1)
         
         narubot.replying(narubot.informations['tweet_id'], narubot.informations['user_name'])
-        sleep(0.5)
+        sleep(1)
         
         narubot.retweet(narubot.informations['tweet_id'])
-        sleep(0.5)
+        sleep(1)
         
         narubot.favorite(narubot.informations['tweet_id'])
-        sleep(0.5)
+        sleep(1)
         
         
         if freshing_update_status == 0:
-            freshing_update_status = int((60 * 60 * 3) / 2.5)
+            freshing_update_status = int((60 * 60 * 3) / 5)
             frases = functions.get_phrases()
             narubot.update_status(choice(frases))
             
@@ -137,5 +137,5 @@ while True:
         loop += 1
         
         sleep(1)
-    print('NaruBot desligado por 12hrs!')
-    sleep(43200)
+    print('NaruBot desligado por 15min!')
+    sleep(900)
