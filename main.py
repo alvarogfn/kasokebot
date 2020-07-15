@@ -110,7 +110,7 @@ while True:
         if datetime.now().hour == 0:
             ret_limit = 100
             fav_limit = 100
-        
+        loop += 1
         sleep(1)
     print('NaruBot desligado por 15 minutos!')
     sleep(900)
