@@ -67,34 +67,10 @@ class narubot(tweepy.StreamListener):
             print(f'    Tweet favoritado!')
     
     def replying(self, tweet_id, user_name):
-        
-        emojis = choice(['^^', '^-^', ':3', '*-*', '>-<', '>_<', '<_<', '>_>', 'o-o', 'u_u'])
-        
-        img = f'images/dattebayo{randint(0, 3)}.gif'
-        
-        try:
-            self.api.update_with_media(status=f'@{user_name} Baayo!!! {emojis}', in_reply_to_status_id=tweet_id, filename=img)
-        except tweepy.RateLimitError:
-            print(f'    Limite de favoritos exedido.')
-            
-        except Exception as error:
-            print(f'    Não foi possível responder.\nERROR = [{error}]')
-        
-        else:         
-            print(f'    Tweet respondido!')
+        pass
     
     def update_status(self, text):
-        try:
-            self.api.update_status(text)
-            
-        except tweepy.RateLimitError:
-            print(f'    Limite de status exedido.')
-            
-        except Exception as error:
-            print(f'    Não foi possível tweetar.\nERROR = [{error}]')
-        
-        else:         
-            print(f'    Tweet feito!')
+        pass
 
 
 print('Start NaruBot!')
@@ -107,8 +83,8 @@ ACESS_SECRET = environ['ACESS_SECRET']
 narubot = narubot(CONSUMER_KEY, CONSUMER_SECRET, ACESS_KEY, ACESS_SECRET)
 
 loop = 1
-fav_limit = 0
-ret_limit = 0
+fav_limit = 100
+ret_limit = 100
 
 tracker = ['Dattebayo', 'Dattebayo!']
 
@@ -120,9 +96,6 @@ while True:
 
         print(f'{loop}º tweet tracked!')
         sleep(1)
-        
-        #narubot.replying(narubot.informations['tweet_id'], narubot.informations['user_name'])
-        #sleep(1)
         
         if ret_limit > 0:
             narubot.retweet(narubot.informations['tweet_id'])
