@@ -9,13 +9,15 @@ class kasokebot(tweepy.StreamListener):
         auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         auth.set_access_token(ACESS_KEY, ACESS_SECRET)
         self.api = tweepy.API(auth, wait_on_rate_limit=True)
+        self.status = True
         self.loop = 0
         
-    def streaming(self, track):
+    def streaming(self, track): 
         stalking = tweepy.Stream(auth=self.api.auth, listener=self)
         stalking.filter(track=track) 
     
     def on_status(self, status):
+        self.status = True
         rt_test = functions.no_text(status.text)      
         if rt_test('RT'):
             self.id_tweet = status.id
@@ -45,7 +47,8 @@ class kasokebot(tweepy.StreamListener):
             
     def on_error(self, status_code):
         if status_code == 420:
-            print('> Bot paused for 15 minutes! <')
+            self.status = False
+            print('> Bot paused for 15 minutes! <') 
             sleep(900)
             return False
 
@@ -65,18 +68,20 @@ ret_limit = 100         # Declaring execution limit variables
 
 while True:
     narubot.streaming(tracker)
-    sleep(1)
-    if ret_limit > 0:
-        narubot.retweet()           # Retweeting    
-        ret_limit -= 1
+    if narubot.status:
         sleep(1)
+        if ret_limit > 0:
+            narubot.retweet()           # Retweeting    
+            ret_limit -= 1
+            sleep(1)
 
-    if fav_limit > 0:
-        narubot.favorite()          # Favoring
-        fav_limit -= 1
-        sleep(1)
-        
-    if datetime.now().hour == 0:                        # Resetting the operations limit
-        print('> Reset actions limit! <')
-        ret_limit = 100
-        fav_limit = 100
+        if fav_limit > 0:
+            narubot.favorite()          # Favoring
+            fav_limit -= 1
+            sleep(1)
+            
+        if datetime.now().hour == 0:                        # Resetting the operations limit
+            print('> Reset actions limit! <')
+            ret_limit = 100
+            fav_limit = 100
+    print('>---------<')
