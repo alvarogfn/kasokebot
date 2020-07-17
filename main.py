@@ -1,7 +1,7 @@
 import tweepy
 from os import environ
 from time import sleep
-import functions
+from functions import no_text, tweets_track, time_for_sleep
 from datetime import datetime
 
 class kasokebot(tweepy.StreamListener):
@@ -9,41 +9,45 @@ class kasokebot(tweepy.StreamListener):
         auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         auth.set_access_token(ACESS_KEY, ACESS_SECRET)
         self.api = tweepy.API(auth, wait_on_rate_limit=True)
-        self.status = True
-        self.loop = 0
-        
+         
     def streaming(self, track): 
         stalking = tweepy.Stream(auth=self.api.auth, listener=self)
         stalking.filter(track=track) 
     
     def on_status(self, status):
         self.status = True
-        rt_test = functions.no_text(status.text)      
+        rt_test = no_text(status.text)    
         if rt_test('RT'):
+            loop = tweets_track() 
             self.id_tweet = status.id
-            self.loop += 1                              # Number of processes done
-            print(f'{self.loop}º tweet tracked!')
+            print(f'{loop}º tweet tracked!') # Number of processes done
             return False
         
     def retweet(self):
         try:
-            self.api.retweet(self.id_tweet)
+            #self.api.retweet(self.id_tweet)
+            print(end='')
         except tweepy.RateLimitError:
-            print(f'    Retweet limit exceeded!')   
+            print('    Retweet limit exceeded.')
+            return True
         except:
-            print(f'    Retweet failed!')
+            print('    Retweet failed.')
         else:         
-            print(f'    Retweet done!')
+            print('    Retweet done.')
+            return False 
     
     def favorite(self):
         try: 
-            self.api.create_favorite(self.id_tweet)
+            #self.api.create_favorite(self.id_tweet)
+            print(end='')
         except tweepy.RateLimitError:
-            print(f'    Favorite limit exceeded!')    
+            print('    Favorite limit exceeded.')
+            return True
         except:
-            print(f'    Favorite failed!')   
+            print('    Favorite failed.')   
         else:         
-            print(f'    Favorite done!')
+            print('    Favorite done.')
+            return False 
             
     def on_error(self, status_code):
         if status_code == 420:
@@ -55,33 +59,37 @@ class kasokebot(tweepy.StreamListener):
 print('Start main script!')
 
 CONSUMER_KEY = environ['CONSUMER_KEY']
-CONSUMER_SECRET = environ['CONSUMER_SECRET']     # Get environment variables
+CONSUMER_SECRET = environ['CONSUMER_SECRET']    # Get environment variables
 ACESS_KEY = environ['ACESS_KEY']
 ACESS_SECRET = environ['ACESS_SECRET']
 
 narubot = kasokebot(CONSUMER_KEY, CONSUMER_SECRET, ACESS_KEY, ACESS_SECRET)
 
-tracker = ['Dattebayo', 'Dattebayo!']  
+tracker = ['Dattebayo', 'Dattebayo!']
 
-fav_limit = 100                     
-ret_limit = 100         # Declaring execution limit variables
+retlimit = False
+favlimit = False
 
 while True:
-    narubot.streaming(tracker)
+    sleep(2)
+    narubot.streaming(['bolsonaro'])
     if narubot.status:
-        sleep(1)
-        if ret_limit > 0:
-            narubot.retweet()           # Retweeting    
-            ret_limit -= 1
-            sleep(1)
-
-        if fav_limit > 0:
-            narubot.favorite()          # Favoring
-            fav_limit -= 1
-            sleep(1)
-            
-        if datetime.now().hour == 0:                        # Resetting the operations limit
-            print('> Reset actions limit! <')
-            ret_limit = 100
-            fav_limit = 100
-    print('>---------<')
+        if not retlimit:
+            sleep(0.5)
+            retlimit = narubot.retweet()
+        if not favlimit:
+            sleep(0.5)
+            favlimit = narubot.favorite()
+        while retlimit and favlimit:
+            if time_for_sleep() % 60 == 0:
+                if time_for_sleep() > 0:
+                    seconds = time_for_sleep()
+                    hour = int((seconds / 60) / 60)
+                    minute = (seconds - hour * 60 * 60) / 60
+                    print(f'> {hour:.0f} hours and {minute:.0f} minutes left to reset <')
+                    sleep(1)
+                else:
+                    retlimit = False
+                    favlimit = False
+                    print('> Reseting <')
+                    sleep(1)
