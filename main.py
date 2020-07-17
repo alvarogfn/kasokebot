@@ -25,7 +25,7 @@ class kasokebot(tweepy.StreamListener):
         
     def retweet(self):
         try:
-            #self.api.retweet(self.id_tweet)
+            self.api.retweet(self.id_tweet)
             print(end='')
         except tweepy.RateLimitError:
             print('    Retweet limit exceeded.')
@@ -38,7 +38,7 @@ class kasokebot(tweepy.StreamListener):
     
     def favorite(self):
         try: 
-            #self.api.create_favorite(self.id_tweet)
+            self.api.create_favorite(self.id_tweet)
             print(end='')
         except tweepy.RateLimitError:
             print('    Favorite limit exceeded.')
@@ -72,13 +72,13 @@ favlimit = False
 
 while True:
     sleep(2)
-    narubot.streaming(['bolsonaro'])
+    narubot.streaming(tracker)
     if narubot.status:
         if not retlimit:
-            sleep(0.5)
+            sleep(1)
             retlimit = narubot.retweet()
         if not favlimit:
-            sleep(0.5)
+            sleep(1)
             favlimit = narubot.favorite()
         while retlimit and favlimit:
             if time_for_sleep() % 60 == 0:
