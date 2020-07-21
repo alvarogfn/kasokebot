@@ -65,7 +65,7 @@ ACESS_SECRET = environ['ACESS_SECRET']
 
 narubot = kasokebot(CONSUMER_KEY, CONSUMER_SECRET, ACESS_KEY, ACESS_SECRET)
 
-tracker = ['Dattebayo', 'Dattebayo!']
+tracker = ['Dattebayo lang:pt', 'Dattebayo! lang:pt']
 
 retlimit = False
 favlimit = False
