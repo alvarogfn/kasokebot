@@ -12,7 +12,7 @@ class kasokebot(tweepy.StreamListener):
          
     def streaming(self, track): 
         stalking = tweepy.Stream(auth=self.api.auth, listener=self)
-        stalking.filter(track=track) 
+        stalking.filter(track=track, languages=['pt', 'en']) 
     
     def on_status(self, status):
         self.status = True
@@ -65,7 +65,7 @@ ACESS_SECRET = environ['ACESS_SECRET']
 
 narubot = kasokebot(CONSUMER_KEY, CONSUMER_SECRET, ACESS_KEY, ACESS_SECRET)
 
-tracker = ['Dattebayo lang:pt', 'Dattebayo! lang:pt']
+tracker = ['Dattebayo', 'Dattebayo!']
 
 retlimit = False
 favlimit = False
