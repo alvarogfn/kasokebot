@@ -1,24 +1,24 @@
-def no_text(text):
-    return lambda filter: text.split()[0] != filter
-    
-def tweets_track():
-    import json
-    with open('database.json', 'r+') as outfile:
-        database = json.load(outfile)
-        data = {}
-        data['tweets_track'] = database['tweets_track']
-        data['tweets_track'] += 1
-        database.update(data)
-        outfile.seek(0)
-        json.dump(database, outfile, indent=4)
-        outfile.close()
-        return data['tweets_track']
+def retweet_check(status):
+    if hasattr(status, 'retweeted_status'):
+        return True
+    else:
+        return False
 
-def time_for_sleep():
-    from datetime import datetime
-    time = datetime.now().hour * 60 * 60
-    time += datetime.now().minute * 60
-    time += datetime.now().second
-    time = 86400 - time
-    return time
+def spam_test(text, filter):
+    palavras_deteck = 0
+    lista_de_palavras = text.upper().split()
+    for filtro in filter:
+        for palavra in lista_de_palavras:
+            if palavra == filtro.upper():
+                palavras_deteck += 1
+    if palavras_deteck > 7:
+        return True
+    else:
+        return False
+
+def len_test(text):
+    if len(text) > 15:
+        return True
+    else:
+        return False
 

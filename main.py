@@ -1,7 +1,7 @@
 import tweepy
 from os import environ
 from time import sleep
-from functions import no_text, tweets_track, time_for_sleep
+from functions import *
 from datetime import datetime
 
 class kasokebot(tweepy.StreamListener):
@@ -10,44 +10,52 @@ class kasokebot(tweepy.StreamListener):
         auth.set_access_token(ACESS_KEY, ACESS_SECRET)
         self.api = tweepy.API(auth, wait_on_rate_limit=True)
          
-    def streaming(self, track): 
+    def streaming(self, track):
         stalking = tweepy.Stream(auth=self.api.auth, listener=self)
-        stalking.filter(track=track, languages=['pt', 'en']) 
+        stalking.filter(track=track, languages=['pt', 'en'])
     
     def on_status(self, status):
-        self.status = True
-        rt_test = no_text(status.text)    
-        if rt_test('RT'):
-            loop = tweets_track() 
-            self.id_tweet = status.id
-            print(f'{loop}º tweet tracked!') # Number of processes done
-            return False
+        self.user_id = None
+        if not retweet_check(status):
+            if not self.user_id == status.user.id:
+                try:
+                    self.tweet_text = status.extended_tweet["full_text"]
+                except AttributeError:
+                    self.tweet_text = status.text
+                finally:
+                    self.tweet_id = status.id
+                    self.user_id = status.user.id
+                    print('Tweet tracked!')
+                    return False
         
     def retweet(self):
         try:
-            self.api.retweet(self.id_tweet)
-            print(end='')
+            self.api.retweet(self.tweet_id)
         except tweepy.RateLimitError:
             print('    Retweet limit exceeded.')
-            return True
-        except:
-            print('    Retweet failed.')
+        except Exception as error:
+            print('    Retweet failed.', error)
         else:         
             print('    Retweet done.')
-            return False 
+ 
     
     def favorite(self):
         try: 
-            self.api.create_favorite(self.id_tweet)
-            print(end='')
+            self.api.create_favorite(self.tweet_id)
         except tweepy.RateLimitError:
             print('    Favorite limit exceeded.')
-            return True
-        except:
-            print('    Favorite failed.')   
+        except Exception as error:
+            print('    Favorite failed. ', error)   
         else:         
             print('    Favorite done.')
-            return False 
+    
+    def report(self):
+        try:
+            self.api.report_spam(self.tweet_id)
+        except:
+            print('        Spam reported failed.')
+        else:
+            print('        Spam reported.')
             
     def on_error(self, status_code):
         if status_code == 420:
@@ -65,31 +73,23 @@ ACESS_SECRET = environ['ACESS_SECRET']
 
 narubot = kasokebot(CONSUMER_KEY, CONSUMER_SECRET, ACESS_KEY, ACESS_SECRET)
 
-tracker = ['Dattebayo', 'Dattebayo!']
+tracker = ['dattebayo', 'dattebayo!']
 
-retlimit = False
-favlimit = False
-
+filtro = ['auge', 'maconha', 'bolsonaro', 'sorriso', 'macaco' 'otário', 'tem bot pra tudo', 'vassoura', 'old', 'que', 'joão pessoa', 'recife', 'noia', 'cachorra' 'quarentena', 'computador', 'teclado', 'frango', 'cu', 'grilo', 'nóia', 'corno', 'hatsune', 'dahyun', 'nayeon', 'jeongyeon', 'javascript', 'mano', 'busão', 'fada sensata', 'puta', 'enzo', 'gripezinha', 'desemprego', 'assistir', 'minsung', 'desculpa por ser homem', 'caraio', 'maicon kuster', 'bot', 'farofa', '#MTVHottest', 'Ariana Grande']
+ 
 while True:
-    sleep(2)
-    narubot.streaming(tracker)
-    if narubot.status:
-        if not retlimit:
-            sleep(1)
-            retlimit = narubot.retweet()
-        if not favlimit:
-            sleep(1)
-            favlimit = narubot.favorite()
-        while retlimit and favlimit:
-            if time_for_sleep() % 60 == 0:
-                if time_for_sleep() > 0:
-                    seconds = time_for_sleep()
-                    hour = int((seconds / 60) / 60)
-                    minute = (seconds - hour * 60 * 60) / 60
-                    print(f'> {hour:.0f} hours and {minute:.0f} minutes left to reset <')
-                    sleep(1)
-                else:
-                    retlimit = False
-                    favlimit = False
-                    print('> Reseting <')
-                    sleep(1)
+    try:
+        narubot.streaming(tracker)
+        if not spam_test(narubot.tweet_text, filtro):
+            if len_test(narubot.tweet_text):
+                narubot.retweet()
+                narubot.favorite()
+            else:
+                print('    Tweet too small.')         
+        else:
+            print('    Spam detected.')
+            narubot.report()
+        sleep(5)
+    except Exception as error:
+        print(f'Last error: {error}')
+        
